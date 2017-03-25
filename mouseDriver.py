@@ -2,7 +2,21 @@
 
 import pyperclip
 
-int main{
+def _readline(self):
+    eol = b'\r'
+    leneol = len(eol)
+    line = bytearray()
+    while True:
+        c = self.ser.read(1)
+        if c:
+            line += c
+            if line[-leneol:] == eol:
+                break
+        else:
+            break
+    return bytes(line)
+
+def main:
 
     #copy from clipboard
     pyperclip.copy()
@@ -10,4 +24,3 @@ int main{
     #paste to clipboard
     pyperclip.paste()
 
-}
