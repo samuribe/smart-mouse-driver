@@ -2,3 +2,12 @@
 
 import pyperclip
 
+int main{
+
+    #copy from clipboard
+    pyperclip.copy()
+
+    #paste to clipboard
+    pyperclip.paste()
+
+}
