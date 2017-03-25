@@ -1,4 +1,5 @@
 import serial
+import pyperclip
 from pymouse import PyMouse
 port = "/dev/cu.usbmodemFA141"
 def readline(a_serial, eol=b'\n\n'):
@@ -13,7 +14,9 @@ def readline(a_serial, eol=b'\n\n'):
         else:
             break
     return bytes(line)
-
+def replyPaste():
+	clipboard = pyperclip.paste()
+	
 def main():
 	ser = serial.Serial(
 	port = port,
