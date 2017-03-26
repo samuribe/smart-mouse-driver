@@ -102,6 +102,8 @@ def main():
 			fuck_with_arduino(find_port())	
 		except serial.serialutil.SerialException:
 			print("Arduino unplugged")
+                except:
+                        print("Failed for some other reason - let's reset")
 			
 if __name__ == "__main__":
 	main()
