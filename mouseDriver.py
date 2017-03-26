@@ -3,7 +3,7 @@
 import pyperclip
 
 def _readline(self):
-    eol = b'\r'
+    eol = chr(0)
     leneol = len(eol)
     line = bytearray()
     while True:
