@@ -78,9 +78,10 @@ def fuck_with_arduino(port):
 		elif(len(ray)>0 and ray[0]==ord('p')):
 			print("PASTE MOTHERFUCKER")
 			ray = ray.decode()
-			print(ray)
-			clipboard_copy(ray);
-			keyboard.type_string(ray);
+			if(len(ray)>0):
+				ray = ray[1:ray.find("\n")]
+				clipboard_copy(ray);
+				keyboard.type_string(ray);
 		elif(len(ray)>0 and ray[0]==ord('c')):
 			print("COPY MOTHERFUCKER")
 			print(ray)
@@ -97,5 +98,6 @@ def main():
 			fuck_with_arduino(find_port())	
 		except serial.serialutil.SerialException:
 			print("Arduino unplugged")
+			
 if __name__ == "__main__":
 	main()
