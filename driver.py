@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 import serial
-import xerox
+import pyperclip
 import subprocess
 import os
 from sys import platform
 from pymouse import PyMouse
 if platform == "darwin":
 	from AppKit import*
-port = "/dev/cu.usbmodemFA141"
+	port = "/dev/cu.usbmodemFA141"
+else:
+	port =".\\\\COM3"
 def readline(a_serial, eol=b'\n\n'):
     leneol = len(eol)
     line = bytearray()
@@ -21,17 +23,19 @@ def readline(a_serial, eol=b'\n\n'):
             break
     return bytes(line)
 def replyCopy(ser):
-	clipboard = xerox.paste()
-	ser.write("P")
+	clipboard = clipboard_paste()
+	ser.write(b"X")
+	print(bytearray(clipboard, "UTF-8"))
 	for b in bytearray(clipboard, "UTF-8"):
 		ser.write(b)
-	ser.write(chr(0))
+	ser.write(b'\x00')
 def clipboard_paste():
 	if(platform == "darwin"):
 		stdoutdata = subprocess.getoutput("pbpaste")
 		return stdoutdata
 	else:
-		return xerox.paste()
+		print(pyperclip.paste())
+		return pyperclip.paste()
 def clipboard_copy(x):
 	if(platform == "drwin"):
 		pb = NSPasteboard.generalPasteboard()
@@ -39,11 +43,8 @@ def clipboard_copy(x):
 		a = NSArray.arrayWithObject_("hello world")
 		pb.writeObjects_(a)
 	else:
-		return xerox.copy()
-print(xerox.paste())
-clipboard_copy("weak")
-print(clipboard_paste())
-exit()
+		print(x)
+		return pyperclip.copy(x)
 def main():
 	ser = serial.Serial(
 	port = port,
@@ -66,19 +67,20 @@ def main():
 	while True:
 		ray = ser.readline();
 		if(len(ray)>2 and ray[0]==109):
-			mouse.move(ray[1]*screen_width, ray[2]*screen_height)
+			mouse.move(int(ray[1]*screen_width), int(ray[2]*screen_height))
 		elif(len(ray)>1 and ray[0]==ord('C')):
 			pos = mouse.position()
 			mouse.click(pos[0], pos[1]);
-		elif(len(ray)>2 and ray[0]==ord('p')):
+		elif(len(ray)>0 and ray[0]==ord('p')):
 			print("PASTE MOTHERFUCKER")
-			#clipboard.copy(ray.decode("UTF-8"));
-			copy_to_clipboard(ray.decode("UTF-8"));
-			input()
+			ray = ray
+			print(ray)
+			clipboard_copy(ray.decode());
 		elif(len(ray)>0 and ray[0]==ord('c')):
 			print("COPY MOTHERFUCKER")
+			print(ray)
 			replyCopy(ser)
-		print(ray);
+		#print(ray);
 	
 if __name__ == "__main__":
 	main()
