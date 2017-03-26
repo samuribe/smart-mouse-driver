@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import serial
+from time import sleep
 import pyperclip
 import subprocess
 import os
@@ -30,7 +31,6 @@ def replyCopy(ser):
 	clipboard = clipboard_paste()
 	print(bytearray(clipboard, "UTF-8"))
 	for q in clipboard:
-		print("Writing byte...")
 		ser.write(q.encode("UTF-8"))
 	ser.write(b'\n')
 def clipboard_paste():
@@ -87,8 +87,8 @@ def fuck_with_arduino(port):
 				clipboard_copy(ray);
 				keyboard.type_string(ray);
 		elif(len(ray)>0 and ray[0]==ord('c')):
-			print("COPY MOTHERFUCKER")
 			keyboard.press_keys(["Command" if platform=="darwin" else keyboard.control_key, "c"])
+			sleep(1);
 			replyCopy(ser)
 		elif(len(ray)>1 and ray[0]==ord('s')):
 			print("Status: <"+str(ray[1]))
