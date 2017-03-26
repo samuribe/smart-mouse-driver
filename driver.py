@@ -72,9 +72,13 @@ def fuck_with_arduino(port):
 		if(len(ray)>2 and ray[0]==109):
 			mouse.move(int(ray[1]*screen_width), int(ray[2]*screen_height))
 		elif(len(ray)>1 and ray[0]==ord('C')):
-			print("CLICK" + str(ray[1]))
+			print("mouse_down: " + str(ray[1]))
 			pos = mouse.position()
-			mouse.click(pos[0], pos[1], ray[1]);
+			mouse.press(pos[0], pos[1], ray[1]);
+		elif(len(ray)>1 and ray[0]==ord('U')):
+			print("mouse_up: " + str(ray[1]))
+			pos = mouse.position()
+			mouse.release(pos[0], pos[1], ray[1]);
 		elif(len(ray)>0 and ray[0]==ord('p')):
 			print("PASTE MOTHERFUCKER")
 			ray = ray.decode()
