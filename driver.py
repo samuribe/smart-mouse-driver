@@ -5,11 +5,14 @@ import subprocess
 import os
 from sys import platform
 from pymouse import PyMouse
-if platform == "darwin":
-	from AppKit import*
-	port = "/dev/cu.usbmodemFA141"
-else:
-	port =".\\\\COM3"
+import serial.tools.list_ports
+global_clipboard = "aroo?"
+def find_port():
+	ports = list(serial.tools.list_ports.comports())
+	for p in ports:
+		if "Arduino" in p[1]:
+			return p[0]
+	return False
 def readline(a_serial, eol=b'\n\n'):
     leneol = len(eol)
     line = bytearray()
@@ -24,28 +27,26 @@ def readline(a_serial, eol=b'\n\n'):
     return bytes(line)
 def replyCopy(ser):
 	clipboard = clipboard_paste()
-	ser.write(b"X")
 	print(bytearray(clipboard, "UTF-8"))
-	for b in bytearray(clipboard, "UTF-8"):
-		ser.write(b)
-	ser.write(b'\x00')
+	for q in clipboard:
+		print("Writing byte...")
+		ser.write(q.encode("UTF-8"))
+	ser.write(b'\n')
 def clipboard_paste():
 	if(platform == "darwin"):
-		stdoutdata = subprocess.getoutput("pbpaste")
-		return stdoutdata
+		print("Paste returning: "+ global_clipboard)
+		return global_clipboard; 
 	else:
-		print(pyperclip.paste())
+		print("Paste returning: "+pyperclip.paste())
 		return pyperclip.paste()
 def clipboard_copy(x):
-	if(platform == "drwin"):
-		pb = NSPasteboard.generalPasteboard()
-		pb.clearContents()
-		a = NSArray.arrayWithObject_("hello world")
-		pb.writeObjects_(a)
+	print("About to copy: "+x)
+	if(platform == "darwin"):
+		global_clipboard = x	
 	else:
-		print(x)
-		return pyperclip.copy(x)
-def main():
+		pyperclip.copy(x)
+def fuck_with_arduino(port):
+	print("Fucking with the arduino")
 	ser = serial.Serial(
 	port = port,
 	baudrate = 9600,
@@ -69,8 +70,9 @@ def main():
 		if(len(ray)>2 and ray[0]==109):
 			mouse.move(int(ray[1]*screen_width), int(ray[2]*screen_height))
 		elif(len(ray)>1 and ray[0]==ord('C')):
+			print("CLICK" + str(ray[1]))
 			pos = mouse.position()
-			mouse.click(pos[0], pos[1]);
+			mouse.click(pos[0], pos[1], ray[1]);
 		elif(len(ray)>0 and ray[0]==ord('p')):
 			print("PASTE MOTHERFUCKER")
 			ray = ray
@@ -80,7 +82,13 @@ def main():
 			print("COPY MOTHERFUCKER")
 			print(ray)
 			replyCopy(ser)
+		elif(len(ray)>1 and ray[0]==ord('s')):
+			print("Status: <"+str(ray[1]))
 		#print(ray);
-	
+def main():
+	print("Searching for an arduino to fuck with...")
+	while not find_port():
+		pass
+	fuck_with_arduino(find_port())	
 if __name__ == "__main__":
 	main()
