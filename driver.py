@@ -88,7 +88,7 @@ def fuck_with_arduino(port):
 				keyboard.type_string(ray);
 		elif(len(ray)>0 and ray[0]==ord('c')):
 			print("COPY MOTHERFUCKER")
-			print(ray)
+			keyboard.press_keys(["Command" if platform=="darwin" else keyboard.control_key, "c"])
 			replyCopy(ser)
 		elif(len(ray)>1 and ray[0]==ord('s')):
 			print("Status: <"+str(ray[1]))
