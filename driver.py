@@ -64,13 +64,13 @@ def fuck_with_arduino(port):
 	mouse = PyMouse()
 	keyboard = PyKeyboard()
 	screen_size = mouse.screen_size();
-	screen_width = screen_size[0]/255
-	screen_height = screen_size[1]/255
+	screen_width = (screen_size[0])/244;
+	screen_height = (screen_size[1])/244;
 	assert(ser.isOpen())
 	while True:
 		ray = ser.readline();
 		if(len(ray)>2 and ray[0]==109):
-			mouse.move(int(ray[1]*screen_width), int(ray[2]*screen_height))
+			mouse.move(int((ray[1]-11)*screen_width), int((ray[2]-11)*screen_height))
 		elif(len(ray)>1 and ray[0]==ord('C')):
 			print("mouse_down: " + str(ray[1]))
 			pos = mouse.position()
@@ -102,8 +102,8 @@ def main():
 			fuck_with_arduino(find_port())	
 		except serial.serialutil.SerialException:
 			print("Arduino unplugged")
-                except:
-                        print("Failed for some other reason - let's reset")
+		except:
+			print("Failed for some other reason - let's reset")
 			
 if __name__ == "__main__":
 	main()
