@@ -3,6 +3,7 @@ import serial
 import pyperclip
 import subprocess
 import os
+from pykeyboard import PyKeyboard
 from sys import platform
 from pymouse import PyMouse
 import serial.tools.list_ports
@@ -61,6 +62,7 @@ def fuck_with_arduino(port):
 	)	
 	
 	mouse = PyMouse()
+	keyboard = PyKeyboard()
 	screen_size = mouse.screen_size();
 	screen_width = screen_size[0]/255
 	screen_height = screen_size[1]/255
@@ -75,9 +77,10 @@ def fuck_with_arduino(port):
 			mouse.click(pos[0], pos[1], ray[1]);
 		elif(len(ray)>0 and ray[0]==ord('p')):
 			print("PASTE MOTHERFUCKER")
-			ray = ray
+			ray = ray.decode()
 			print(ray)
-			clipboard_copy(ray.decode());
+			clipboard_copy(ray);
+			keyboard.type_string(ray);
 		elif(len(ray)>0 and ray[0]==ord('c')):
 			print("COPY MOTHERFUCKER")
 			print(ray)
@@ -87,8 +90,12 @@ def fuck_with_arduino(port):
 		#print(ray);
 def main():
 	print("Searching for an arduino to fuck with...")
-	while not find_port():
-		pass
-	fuck_with_arduino(find_port())	
+	while True:
+		while not find_port():
+			pass
+		try:
+			fuck_with_arduino(find_port())	
+		except serial.serialutil.SerialException:
+			print("Arduino unplugged")
 if __name__ == "__main__":
 	main()
